@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { FolderKanban } from "lucide-react"
 
-export default function LoginPage() {
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react"
+
+function LoginContent() {
+  const searchParams = useSearchParams()
+  const error = searchParams.get("error")
+
   const handleGoogleLogin = async () => {
     const supabase = createClient()
     await supabase.auth.signInWithOAuth({
@@ -29,6 +35,11 @@ export default function LoginPage() {
               Entre com a sua conta Google para gerir os projetos.
             </CardDescription>
           </div>
+          {error && (
+            <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive border border-destructive/20 text-left break-all">
+              <strong>Erro de autenticação:</strong> {error}
+            </div>
+          )}
         </CardHeader>
         <CardContent>
           <Button
@@ -59,5 +70,13 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">A carregar...</div>}>
+      <LoginContent />
+    </Suspense>
   )
 }

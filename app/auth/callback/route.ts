@@ -40,7 +40,10 @@ export async function GET(request: Request) {
       return response
     }
     console.error("Supabase auth exchangeCodeForSession error:", error)
+    const errMessage = encodeURIComponent(error.message || "auth_exchange_failed")
+    return NextResponse.redirect(`${baseUrl}/login?error=${errMessage}`)
   }
 
-  return NextResponse.redirect(`${baseUrl}/login?error=auth`)
+  const errorParam = searchParams.get("error_description") || searchParams.get("error") || "no_code"
+  return NextResponse.redirect(`${baseUrl}/login?error=${encodeURIComponent(errorParam)}`)
 }
