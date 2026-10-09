@@ -8,7 +8,7 @@ export async function createProject(formData: FormData) {
   const description = formData.get("description") as string
 
   if (!title?.trim() || !description?.trim()) {
-    return { error: "Título e descrição são obrigatórios." }
+    return
   }
 
   const supabase = await createClient()
@@ -17,7 +17,7 @@ export async function createProject(formData: FormData) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: "Não autenticado." }
+    return
   }
 
   const { error } = await supabase.from("projects").insert({
@@ -27,11 +27,11 @@ export async function createProject(formData: FormData) {
   })
 
   if (error) {
-    return { error: error.message }
+    console.error("Erro ao criar projeto:", error.message)
+    return
   }
 
   revalidatePath("/")
-  return { success: true }
 }
 
 export async function updateProject(id: string, formData: FormData) {
@@ -39,7 +39,7 @@ export async function updateProject(id: string, formData: FormData) {
   const description = formData.get("description") as string
 
   if (!title?.trim() || !description?.trim()) {
-    return { error: "Título e descrição são obrigatórios." }
+    return
   }
 
   const supabase = await createClient()
@@ -48,7 +48,7 @@ export async function updateProject(id: string, formData: FormData) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: "Não autenticado." }
+    return
   }
 
   const { error } = await supabase
@@ -61,11 +61,11 @@ export async function updateProject(id: string, formData: FormData) {
     .eq("id", id)
 
   if (error) {
-    return { error: error.message }
+    console.error("Erro ao atualizar projeto:", error.message)
+    return
   }
 
   revalidatePath("/")
-  return { success: true }
 }
 
 export async function deleteProject(id: string) {
@@ -75,17 +75,17 @@ export async function deleteProject(id: string) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return { error: "Não autenticado." }
+    return
   }
 
   const { error } = await supabase.from("projects").delete().eq("id", id)
 
   if (error) {
-    return { error: error.message }
+    console.error("Erro ao apagar projeto:", error.message)
+    return
   }
 
   revalidatePath("/")
-  return { success: true }
 }
 
 export async function signOut() {
