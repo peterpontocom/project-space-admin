@@ -8,6 +8,8 @@ import { createProject, deleteProject, signOut } from "@/app/actions/projects"
 import { FolderKanban, LogOut, Plus, Trash2 } from "lucide-react"
 import { redirect } from "next/navigation"
 
+import { Suspense } from "react"
+
 type Project = {
   id: string
   title: string
@@ -15,7 +17,7 @@ type Project = {
   created_at: string
 }
 
-export default async function AdminPage() {
+async function AdminContent() {
   const supabase = await createClient()
   const {
     data: { user },
@@ -139,5 +141,13 @@ export default async function AdminPage() {
         </div>
       </main>
     </div>
+  )
+}
+
+export default function AdminPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background p-6">A carregar...</div>}>
+      <AdminContent />
+    </Suspense>
   )
 }
