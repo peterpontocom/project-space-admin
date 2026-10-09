@@ -8,8 +8,6 @@ import { createProject, deleteProject, signOut } from "@/app/actions/projects"
 import { FolderKanban, LogOut, Plus, Trash2 } from "lucide-react"
 import { redirect } from "next/navigation"
 
-export const dynamic = "force-dynamic"
-
 type Project = {
   id: string
   title: string
