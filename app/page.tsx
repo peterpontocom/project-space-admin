@@ -109,7 +109,7 @@ export default async function AdminPage() {
                 <Card key={project.id}>
                   <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                     <div>
-                      <CardTitle className="text-base">{project.title}</CardTitle>
+                      <CardTitle className={"text-base"}>{project.title}</CardTitle>
                       <CardDescription>
                         {new Date(project.created_at).toLocaleDateString("pt-PT", {
                           day: "numeric",
