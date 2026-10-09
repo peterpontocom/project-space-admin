@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Space Admin
 
-## Getting Started
+Painel de administração para criar e gerir projetos da plataforma Project Space.
 
-First, run the development server:
+## Stack
+
+- Next.js 16 (App Router)
+- Supabase (Auth + Database) com Google OAuth
+- Tailwind CSS 4 + shadcn/ui
+- TypeScript
+
+## Configuração
+
+1. Use o **mesmo projeto Supabase** do `project-space`.
+2. O SQL da tabela `projects` e as policies já devem estar criados (veja o README do project-space).
+3. Ative o provider **Google** em Authentication → Providers no Supabase.
+4. Em Authentication → URL Configuration adicione:
+   - Site URL: `http://localhost:3001`
+   - Redirect URLs: `http://localhost:3001/**` e `http://localhost:3000/**`
+5. No Google Cloud Console, crie um OAuth Client ID (Web) e adicione os origins/redirects correspondentes.
+6. Copie `.env.example` para `.env.local`:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+7. Instale e rode (porta 3001):
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Abra [http://localhost:3001](http://localhost:3001).
 
-## Learn More
+## Funcionalidades
 
-To learn more about Next.js, take a look at the following resources:
+- Login com Google
+- Criar projeto (título + descrição)
+- Listar projetos
+- Apagar projetos
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Notas
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Qualquer utilizador autenticado pode gerir projetos (pode restringir depois com roles).
+- A visualização pública fica no repositório `project-space`.
