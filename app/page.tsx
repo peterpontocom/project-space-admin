@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { createProject, deleteProject, signOut } from "@/app/actions/projects"
-import { Orbit, LogOut, Plus, Trash2, Rocket, Radio, Sparkles } from "lucide-react"
+import { Orbit, LogOut, Plus, Trash2, Rocket, Radio, Sparkles, Image as ImageIcon } from "lucide-react"
 import { redirect } from "next/navigation"
 import { Suspense } from "react"
 
@@ -13,6 +13,7 @@ type Project = {
   id: string
   title: string
   description: string
+  images?: string[]
   created_at: string
 }
 
@@ -28,7 +29,7 @@ async function AdminContent() {
 
   const { data: projects } = await supabase
     .from("projects")
-    .select("id, title, description, created_at")
+    .select("id, title, description, images, created_at")
     .order("created_at", { ascending: false })
 
   const list = (projects as Project[] | null) ?? []
@@ -111,6 +112,23 @@ async function AdminContent() {
                   className="bg-slate-950/70 border-cyan-500/20 focus:border-cyan-400 focus:ring-cyan-400/20 text-white placeholder:text-slate-600 rounded-lg resize-none"
                 />
               </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="images" className="text-slate-300 text-sm font-medium flex items-center gap-2">
+                    <ImageIcon className="h-4 w-4 text-cyan-400" />
+                    Fotografias / Imagens Espaciais (Opcional)
+                  </Label>
+                  <span className="text-[11px] font-mono text-cyan-400/70">Máx: 3MB por ficheiro • Múltiplos permitidos</span>
+                </div>
+                <Input
+                  id="images"
+                  name="images"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                  multiple
+                  className="bg-slate-950/70 border-cyan-500/20 focus:border-cyan-400 focus:ring-cyan-400/20 text-slate-300 file:bg-cyan-950 file:border-0 file:text-cyan-300 file:text-xs file:font-mono file:px-3 file:py-1 file:rounded-md file:mr-3 hover:file:bg-cyan-900 cursor-pointer rounded-lg"
+                />
+              </div>
               <Button type="submit" className="w-full sm:w-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-semibold px-6 shadow-[0_0_20px_rgba(56,189,248,0.3)]">
                 <Plus className="h-4 w-4 mr-2" />
                 Publicar no Radar
@@ -179,10 +197,24 @@ async function AdminContent() {
                       </Button>
                     </form>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4">
                     <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
                       {project.description}
                     </p>
+                    {project.images && project.images.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
+                        {project.images.map((imgUrl, idx) => (
+                          <div key={idx} className="relative aspect-video rounded-lg overflow-hidden border border-cyan-500/20 bg-slate-950/60 group/img">
+                            <img
+                              src={imgUrl}
+                              alt={`${project.title} - imagem ${idx + 1}`}
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover/img:scale-105"
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

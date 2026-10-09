@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 export async function createProject(formData: FormData) {
   const title = formData.get("title") as string
   const description = formData.get("description") as string
+  const files = formData.getAll("images") as File[]
 
   if (!title?.trim() || !description?.trim()) {
     return
@@ -20,9 +21,41 @@ export async function createProject(formData: FormData) {
     return
   }
 
+  const imageUrls: string[] = []
+  const MAX_FILE_SIZE = 3 * 1024 * 1024 // 3MB
+
+  for (const file of files) {
+    if (!file || file.size === 0 || !file.name) continue
+
+    if (file.size > MAX_FILE_SIZE) {
+      console.error(`O ficheiro ${file.name} excede o limite máximo de 3MB.`)
+      continue
+    }
+
+    const fileExt = file.name.split(".").pop()
+    const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("images")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      })
+
+    if (!uploadError) {
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("images").getPublicUrl(fileName)
+      imageUrls.push(publicUrl)
+    } else {
+      console.error("Erro no upload da imagem:", uploadError.message)
+    }
+  }
+
   const { error } = await supabase.from("projects").insert({
     title: title.trim(),
     description: description.trim(),
+    images: imageUrls,
     created_by: user.id,
   })
 
